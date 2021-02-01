@@ -1,5 +1,4 @@
 const crypt = require('bcryptjs')
-const { expect } = require('chai')
 const supertest = require('supertest')
 const app = require('../src/app')
 const helpers = require('./test-helpers')
@@ -15,11 +14,13 @@ describe(`User Endpoints`, () => {
         app.set('db', db)
     })
 
+    after('disconnect from db', ()=> db.destroy())
+
     before('clean the table', () => helpers.truncateTables(db))
 
     afterEach('cleanup', () => helpers.truncateTables(db))
 
-    after('disconnect from db', ()=> db.destroy())
+    
 
     describe(`POST / api/user`, () => {
         beforeEach(`insert users`, () => helpers.seedUsers(db, testUsers))
@@ -37,10 +38,10 @@ describe(`User Endpoints`, () => {
                 delete registerAttemptBody[field]
 
                 return supertest(app)
-                    .post('api/user')
+                    .post('/api/user')
                     .send(registerAttemptBody)
                     .expect(400, {
-                        error: `Missing '${field}' in request body.`
+                        error: `Missing '${field}' in the request body.`
                     })
             })
         })
@@ -81,7 +82,7 @@ describe(`User Endpoints`, () => {
             .expect(400, {error: `Please create a password that does not begin or end with an empty space.`})
         })
 
-        it(`responds 400 eror when password isn't complex enough`, () => {
+        it(`responds 400 error when password isn't complex enough`, () => {
             const weakPass = {
                 name: 'weak name',
                 username: 'weak username',
@@ -95,8 +96,8 @@ describe(`User Endpoints`, () => {
 
         it(`responds 400 when user name already taken`, () => {
             const userTaken = {
-                name: testUser.username,
-                username: 'name taken',
+                name: 'name taken',
+                username: testUser.username,
                 password: 'B33ntaken!'
             }
             return supertest(app)

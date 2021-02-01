@@ -21,9 +21,9 @@ app.use(
 app.use(helmet())
 app.use(cors({origin: CLIENT_ORIGIN}))
 
-app.use('/api/user', userRouter)
+app.use('/api/users', userRouter)
 app.use('/api/auth', authRouter)
-// app.use('/api/guide', guideRouter)
+app.use('/api/guides', guideRouter)
 
 
 app.get('/', (req, res) => {
