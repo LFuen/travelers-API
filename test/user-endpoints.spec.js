@@ -22,7 +22,7 @@ describe(`User Endpoints`, () => {
 
     
 
-    describe(`POST / api/user`, () => {
+    describe(`POST / api/users`, () => {
         beforeEach(`insert users`, () => helpers.seedUsers(db, testUsers))
         
         const requiredFields = ['name', 'username', 'password']
@@ -38,7 +38,7 @@ describe(`User Endpoints`, () => {
                 delete registerAttemptBody[field]
 
                 return supertest(app)
-                    .post('/api/user')
+                    .post('/api/users')
                     .send(registerAttemptBody)
                     .expect(400, {
                         error: `Missing '${field}' in the request body.`
@@ -53,7 +53,7 @@ describe(`User Endpoints`, () => {
                 password: 'X Eight'
             }
             return supertest(app)
-                .post('/api/user')
+                .post('/api/users')
                 .send(shortPass)
                 .expect(400, {error: `Please create a password longer than 8 characters.`})
         })
@@ -65,7 +65,7 @@ describe(`User Endpoints`, () => {
                 password: '*'.repeat(73)
             }
             return supertest(app)
-                .post('/api/user')
+                .post('/api/users')
                 .send(longPass)
                 .expect(400, {error: `Whoa, that's a crazy long password! Can you keep it under 72 characters?`})
         })
@@ -77,7 +77,7 @@ describe(`User Endpoints`, () => {
                 password: ' 2Sp@ces '
             }
             return supertest(app)
-            .post('/api/user')
+            .post('/api/users')
             .send(passSpaces)
             .expect(400, {error: `Please create a password that does not begin or end with an empty space.`})
         })
@@ -89,7 +89,7 @@ describe(`User Endpoints`, () => {
                 password: 'weak sauce'
             }
             return supertest(app)
-                .post('/api/user')
+                .post('/api/users')
                 .send(weakPass)
                 .expect(400, {error: `Password must contain an uppercase letter, a lowercase letter, a number, and a special character.`})
         })
@@ -101,7 +101,7 @@ describe(`User Endpoints`, () => {
                 password: 'B33ntaken!'
             }
             return supertest(app)
-                .post('/api/user')
+                .post('/api/users')
                 .send(userTaken)
                 .expect(400, {error: `Sorry, that username has been taken.`})
         })
@@ -114,7 +114,7 @@ describe(`User Endpoints`, () => {
                     password: 'noPass'
                 }
                 return supertest(app)
-                    .post('/api/user')
+                    .post('/api/users')
                     .send(newUser)
                     .expect(201)
                     .expect(res => {
@@ -122,7 +122,7 @@ describe(`User Endpoints`, () => {
                         expect(res.body.name).to.eql(newUser.name)
                         expect(res.body.username).to.eql(newUser.username)
                         expect(res.body).to.not.have.property('password')
-                        expect(res.headers.location).to.eql(`/api/user/${res.body.id}`)
+                        expect(res.headers.location).to.eql(`/api/users/${res.body.id}`)
                     })
             })
 
@@ -133,7 +133,7 @@ describe(`User Endpoints`, () => {
                     password: '3ncrypted!'
                 }
                 return supertest(app)
-                    .post('/api/user')
+                    .post('/api/users')
                     .send(newUser)
                     .expect(res =>
                         db
