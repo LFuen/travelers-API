@@ -19,7 +19,7 @@ app.use(
     })
 )
 app.use(helmet())
-app.use(cors({origin: CLIENT_ORIGIN}))
+app.use(cors())
 
 app.use('/api/users', userRouter)
 app.use('/api/auth', authRouter)
