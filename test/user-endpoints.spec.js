@@ -2,6 +2,7 @@ const crypt = require('bcryptjs')
 const supertest = require('supertest')
 const app = require('../src/app')
 const helpers = require('./test-helpers')
+const knex = require('knex')
 
 describe(`User Endpoints`, () => {
     let db
@@ -9,8 +10,11 @@ describe(`User Endpoints`, () => {
     const testUsers = helpers.usersArray()
     const testUser = testUsers[0]
 
-    before('Make knex instance', () => {
-        db = helpers.knexInstance()
+    before(`make knex instance`, () => {
+        db = knex({
+            client: "pg",
+            connection: process.env.DATABASE_URL
+        })
         app.set('db', db)
     })
 

@@ -1,3 +1,4 @@
+const knex = require('knex');
 const { expect } = require('chai')
 const jwt = require('jsonwebtoken')
 const supertest = require('supertest')
@@ -12,7 +13,10 @@ describe('Auth Endpoints', () => {
     const testUser = testUsers[0]
 
     before(`make knex instance`, () => {
-        db = helpers.knexInstance()
+        db = knex({
+            client: "pg",
+            connection: process.env.DATABASE_URL
+        })
         app.set('db', db)
     })
 

@@ -1,13 +1,5 @@
-const knex = require('knex')
 const crypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
-
-const knexInstance = () => {
-    return knex({
-        client: 'pg',
-        connection: process.env.DATABASE_URL
-    })
-}
 
 const usersArray = () => {
     return [
@@ -55,7 +47,6 @@ const seedUsers = (db, users) => {
 }
 
 module.exports = {
-    knexInstance,
     usersArray,
     authHeader,
     truncateTables,
