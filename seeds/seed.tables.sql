@@ -1,15 +1,14 @@
 BEGIN;
 
-INSERT INTO "user" (id, name, username, password)
+INSERT INTO "user" (id, username, password)
 VALUES
     (
         1,
-        'Lili',
         'admin',
         '$2a$04$IZJWZUiBkBuKfyJU0XV9Xexr2BmGsCBnt1vRIzI9ncV3rBQeDqtbi'
     );
 
-INSERT INTO "guide" (id, guide_type, city, recommend, comments)
+INSERT INTO "guide" (id, guide_type, city, recommendation, comments)
 VALUES
     (
         1,

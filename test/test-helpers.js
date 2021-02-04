@@ -6,14 +6,12 @@ const usersArray = () => {
         {
             id: 1,
             username: 'First Username',
-            name: 'First User',
             password: 'First User Password'
         },
 
         {
             id: 2,
             username: 'Second Username',
-            name: 'Second User',
             password: 'Second User Password'
         }
     ]
@@ -27,7 +25,11 @@ const authHeader = (user, secret = process.env.JWT_SECRET) => {
     return `Bearer ${token}`
 }
 
-const truncateTables = (db) => {
+const truncUserTable = (db) => {
+    return db.raw(`TRUNCATE "user", "user" RESTART IDENTITY CASCADE`)
+}
+
+const truncGuideTable = (db) => {
     return db.raw(`TRUNCATE "guide", "user" RESTART IDENTITY CASCADE`)
 }
 
@@ -46,9 +48,32 @@ const seedUsers = (db, users) => {
     })
 }
 
+const guidesArray = () => {
+    return [
+        {
+            id: 1,
+            guide_type: 'Stay',
+            city: 'Miami Beach',
+            recommendation: 'Marriott Miami Beach',
+            comments: 'This place is amazing and the staff is great.'
+        
+        },
+
+        {
+            id: 2,
+            guide_type: 'Food',
+            city: 'Miami',
+            recommendation: `Frankie's Pizza`,
+            comments: `This is probably THE best pizza place in all of Miami. But only if you're a fan of Italian-style square pizza!`
+        }
+    ]
+}
+
 module.exports = {
     usersArray,
+    guidesArray,
     authHeader,
-    truncateTables,
+    truncUserTable,
+    truncGuideTable,
     seedUsers
 }

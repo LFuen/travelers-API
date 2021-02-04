@@ -20,13 +20,13 @@ describe(`User Endpoints`, () => {
 
     after('disconnect from db', ()=> db.destroy())
 
-    before('clean the table', () => helpers.truncateTables(db))
+    before('clean the table', () => helpers.truncUserTable(db))
 
-    afterEach('cleanup', () => helpers.truncateTables(db))
+    afterEach('cleanup', () => helpers.truncUserTable(db))
 
     
 
-    describe(`POST / api/users`, () => {
+    describe(`POST /api/users`, () => {
         beforeEach(`insert users`, () => helpers.seedUsers(db, testUsers))
         
         const requiredFields = ['name', 'username', 'password']

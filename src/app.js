@@ -29,7 +29,7 @@ app.use(express.static(path.join(__dirname, 'public')))
 
 app.use('/api/users', userRouter)
 app.use('/api/auth', authRouter)
-// app.use('/api/guides', guideRouter)
+app.use('/api/guides', guideRouter)
 
 
 app.get('/', (req, res) => {

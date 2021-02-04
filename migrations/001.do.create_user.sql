@@ -1,6 +1,6 @@
 CREATE TABLE "user" (
     "id" SERIAL PRIMARY KEY,
-    "name" TEXT NOT NULL,
     "username" TEXT NOT NULL UNIQUE,
-    "password" TEXT NOT NULL
+    "password" TEXT NOT NULL,
+    "date_created" TIMESTAMP DEFAULT now() NOT NULL
 );

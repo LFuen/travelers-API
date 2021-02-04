@@ -22,9 +22,9 @@ describe('Auth Endpoints', () => {
 
     after('disconnect from db', () => db.destroy())
 
-    before(`cleanup`, () => helpers.truncateTables(db))
+    before(`cleanup`, () => helpers.truncUserTable(db))
 
-    afterEach(`cleanup`, () => helpers.truncateTables(db))
+    afterEach(`cleanup`, () => helpers.truncUserTable(db))
 
     describe(`POST /api/auth/token`, () => {
         beforeEach(`insert users`, () => 
@@ -74,7 +74,7 @@ describe('Auth Endpoints', () => {
         }
 
         const expectedToken = jwt.sign(
-            {user_id: testUser.id, name: testUser.name},
+            {user_id: testUser.id},
             JWT_SECRET,
             {
                 subject: testUser.username,
@@ -96,7 +96,7 @@ describe('Auth Endpoints', () => {
 
         it(`responds 200 and JWT auth token using secret`, () => {
             const expectedToken = jwt.sign(
-                {user_id: testUser.id, name: testUser.name},
+                {user_id: testUser.id},
                 JWT_SECRET,
                 {subject: testUser.username, expiresIn: JWT_EXPIRY, algorithm: 'HS256'}
             )
