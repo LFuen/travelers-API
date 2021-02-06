@@ -15,29 +15,29 @@ const serializeGuide = (guide) => ({
     comments: xss(guide.comments)
 })
 
-// guideRouter.use(requireAuth).use(async (req, res, next) => {
-//     try {
-//         const guide = await GuideService.getAllGuides(
-//             req.app.get('db'),
-//             req.
-//         )
-//     }
-// })
-
-
 
 guideRouter
   .route("/")
-  .get((req, res, next) => {
+  .get(async (req, res, next) => {
     GuideService.getAllGuides(req.app.get("db"))
-      .then((guide) => {
-        res.json(guide.map(serializeGuide));
+      .then(async (guides) => {
+        if(guides.length !== 0) {
+          return guides.map((guide, i) => ({
+            id: guide.id,
+            guide_type: guide.guide_type,
+            city: xss(guide.city),
+            recommendation: xss(guide.recommendation),
+            comments: xss(guide.comments)
+          }))
+        }
+      })
+      .then((guides) => {return res.json(guides || [])
       })
       .catch(next);
   })
-  .post(parse, (req, res, next) => {
-    const { id, guide_type, city, recommendation, comments } = req.body;
-    const newGuide = { id, guide_type, city, recommendation, comments };
+  .post(parse, requireAuth, (req, res, next) => {
+    const { city, recommendation, comments } = req.body;
+    const newGuide = { city, recommendation, comments };
 
     for (const [key, value] of Object.entries(newGuide)) {
       if (value === null) {
@@ -45,6 +45,12 @@ guideRouter
           error: { message: `Missing '${key}' in the request body.` },
         });
       }
+    }
+
+    newGuide = {
+      city: xss(city), 
+      recommendation: xss(recommendation), 
+      comments: xss(comments)
     }
 
     GuideService.addGuide(req.app.get("db"), newGuide)
@@ -59,6 +65,7 @@ guideRouter
 
 guideRouter
   .route("/:guide_id")
+  .all(requireAuth)
   .all((req, res, next) => {
       GuideService.getById(req.app.get("db"), req.params.guide_id)
         .then((guide) => {
@@ -67,7 +74,7 @@ guideRouter
                     error: {message: `Sorry, you've been misGUIDEed!`}
                 })
             }
-            res.guide = guide
+            res.json(guide)
             next()
         })
         .catch(next)
@@ -83,8 +90,8 @@ guideRouter
         .catch(next)
   })
   .patch(parse, (req, res, next) => {
-    const { id, guide_type, city, recommendation, comments } = req.body;
-    const guideUpdate = { id, guide_type, city, recommendation, comments } 
+    const {guide_type, city, recommendation, comments } = req.body;
+    const guideUpdate = {guide_type, city, recommendation, comments } 
 
     const numVal = Objects.values(guideUpdate).filter(Boolean).length
         if(numVal === 0) {

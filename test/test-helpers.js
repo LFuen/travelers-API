@@ -69,11 +69,37 @@ const guidesArray = () => {
     ]
 }
 
+
+function misGuide() {
+    const badGuide = {
+      id: 911,
+      guide_type: "Food",
+      city: "Evil City",
+      recommendation: 'Worst recommendation',
+      comments: "Rude comments",
+    };
+  
+    const expectedGuide = {
+      ...badGuide,
+      id: 1,
+      guide_type: "Food",
+      city: "Evil City",
+      recommendation: 'Worst recommendation',
+      comments: "Rude comments",
+    };
+    return {
+      badGuide,
+      expectedGuide,
+    };
+  }
+
+
 module.exports = {
     usersArray,
     guidesArray,
     authHeader,
     truncUserTable,
     truncGuideTable,
-    seedUsers
+    seedUsers,
+    misGuide
 }

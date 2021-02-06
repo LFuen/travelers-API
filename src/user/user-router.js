@@ -10,7 +10,7 @@ userRouter
     .post('/', parse, async (req, res, next) => {
         const {name, username, password} = req.body
 
-        for(const field of ['name', 'username', 'password'])
+        for(const field of ['username', 'password'])
             if(!req.body[field])
                 return res.status(400).json({
                     error: `Missing '${field}' in the request body.`
@@ -34,15 +34,13 @@ userRouter
 
             const newUser = {
                 username,
-                password: hashed,
-                name
+                password: hashed
             }
 
             const user = await UserService.insertUser(
                 req.app.get('db'),
                 newUser
             )
-
             res
                 .status(201)
                 .location(path.posix.join(req.originalUrl, `/${user.id}`))

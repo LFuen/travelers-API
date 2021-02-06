@@ -1,8 +1,21 @@
 const crypt = require('bcryptjs')
+const xss = require('xss')
 
 const REGEX_UPPER_LOWER_NUMBER_SPECIAL = /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&])[\S]+/
 
 const UserService = {
+    getAllUsers(knex) {
+        return knex.select('*').from('user')
+    },
+
+    getById (knex, id) {
+        return knex.from('user').select('*').where('id', id).first()
+    },
+
+    deleteUser(knex, id) {
+        return knex('user').where({id}).delete()
+    },
+
     usernameTaken(db, username) {
         return db('user')
             .where({ username })
@@ -41,8 +54,8 @@ const UserService = {
     serializeUser(user) {
         return {
             id: user.id,
-            name: user.name,
-            username: user.username
+            username: xss(user.username),
+            date_created: new Date(user.date_created)
         }
     }
 }

@@ -5,12 +5,14 @@ const supertest = require('supertest')
 const app = require('../src/app')
 const helpers = require('./test-helpers')
 const { JWT_SECRET, JWT_EXPIRY } = require('../src/config')
+const testUsers = helpers.usersArray()
+const testUser = testUsers[0]
+
 
 describe('Auth Endpoints', () => {
     let db 
 
-    const testUsers = helpers.usersArray()
-    const testUser = testUsers[0]
+
 
     before(`make knex instance`, () => {
         db = knex({
@@ -107,3 +109,8 @@ describe('Auth Endpoints', () => {
         })
     })
 })
+
+
+module.exports = {
+    testUser
+}

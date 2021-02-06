@@ -5,11 +5,14 @@ const helpers = require('./test-helpers')
 const knex = require('knex')
 const { expect } = require('chai')
 
+const {testUser} = require('./auth-endpoints.spec')
+
+
 describe(`Guide Endpoints`, () => {
     let db
 
     const testGuides = helpers.guidesArray()
-    const testGuide = testGuides[0]    
+    const testGuide = testGuides[0]
 
     before(`make knex instance`, () => {
         db = knex({
@@ -25,7 +28,170 @@ describe(`Guide Endpoints`, () => {
 
     afterEach('cleanup', () => helpers.truncGuideTable(db))
 
+    console.log('This is the test user', testUser)
     
+    describe(`GET /api/guides`, () => {
+        context("Given there are no guides in the database", () => {
+            it(`responds with 200 and empty list`, () => {
+            return supertest(app)
+                .get("/api/guides")
+                .set(`Authorization`, helpers.authHeader(testUser))
+                .expect(200, []);
+            });
+        });
+
+        context(`Given there are guides in the database`, () => {
+            const testGuide = helpers.guidesArray();
+
+            beforeEach(`insert guide`, () => {
+            return db.into("guide").insert(testGuide);
+            });
+
+            it(`gets the guides from the store`, () => {
+            return supertest(app)
+                .get("/api/guides")
+                .expect(200, testGuide);
+            });
+        });
+
+        context(`Given an XSS atack on guides`, () => {
+            const { badGuide, expectedGuide } = helpers.misGuide();
+
+            beforeEach(`insert bad guide`, () => {
+            return db.into("guide").insert([badGuide]);
+            });
+
+            it(`removes no bueno XSS attack content`, () => {
+            return supertest(app)
+                .get(`/api/guides`)
+                .expect(200)
+                .expect((res) => {
+                expect(res.body[0].guide_type).to.eql(expectedGuide.guide_type);
+                expect(res.body[0].city).to.eql(expectedGuide.city);
+                expect(res.body[0].recommendation).to.eql(expectedGuide.recommendation);
+                expect(res.body[0].comments).to.equal(expectedGuide.comments);
+                });
+            });
+        });
+        });
+
+        describe(`GET /api/guides/:guide_id`, () => {
+        context(`Given there are no guides in the database`, () => {
+            it(`responds with 404`, () => {
+            const guideId = 123456;
+            return supertest(app)
+                .get(`/api/guides/${guideId}`)
+                .set(`Authorization`, helpers.authHeader(testUser))
+                .expect(404, {
+                error: { message: `Sorry, you've been misGUIDEed!` },
+                });
+            });
+        });
+
+        context(`Given there are guides in the database`, () => {
+            const testGuides = helpers.guidesArray()
+
+            beforeEach(`insert guides`, () => {
+            return db.into("guide").insert(testGuides);
+            });
+
+            it(`responds with 200 and the specified guide`, () => {
+            const guideId = 3;
+            const expectedGuide = testGuides[guideId - 1];
+            return supertest(app)
+                .get(`/api/guides/${guideId}`)
+                .set(`Authorization`, helpers.authHeader(testUser))
+                .expect(200, expectedGuide);
+            });
+        });
+
+        context(`Given an XSS guide attack`, () => {
+            const { badGuide, expectedGuide } = helpers.misGuide();
+
+            beforeEach(`insert bad guide`, () => {
+            return db.into("guide").insert([badGuide]);
+            });
+
+            it(`removes no bueno XSS attack content`, () => {
+            return supertest(app)
+                .get(`/api/guides/${badGuide.id}`)
+                .set(`Authorization`, helpers.authHeader(testUser))
+                .expect(200)
+                .expect((res) => {
+                    expect(res.body).to.have.property('id')
+                    expect(res.body[0].guide_type).to.eql(expectedGuide.guide_type);
+                    expect(res.body[0].city).to.eql(expectedGuide.city);
+                    expect(res.body[0].recommendation).to.eql(expectedGuide.recommendation);
+                    expect(res.body[0].comments).to.equal(expectedGuide.comments);
+                });
+            });
+        });
+        });
+
+        describe(`GET /api/guides`, () => {
+        context("Given there are guides in the database", () => {
+            const testGuides = helpers.guidesArray();
+
+            beforeEach("new guide", () => {
+            return db.into("guide").insert(testGuides);
+            });
+
+            it(`GET /api/guides responds with 200 and all of the guides`, () => {
+            return supertest(app)
+                .get("/api/guides")
+                .set(`Authorization`, helpers.authHeader(testUser))
+                .expect(200, testGuides);
+            });
+        });
+        });
+
+        describe(`GET /api/guides/:guide_id`, () => {
+            context(`Given there are guides in the database`, () => {
+                const testGuides = helpers.guidesArray();
+
+                beforeEach("new guide", () => {
+                return db.into("guide").insert(testGuides);
+                });
+
+                it(`responds with 200 and the specified guide`, () => {
+                const guideId = 3;
+                const expectedGuide = testGuides[guideId - 1];
+                return supertest(app)
+                    .get(`/api/guides/${guideId}`)
+                .set(`Authorization`, helpers.authHeader(testUser))
+                    .expect(200, expectedGuide);
+                });
+            });
+
+            context(`Given an xss attack on an order`, () => {
+                const badGuide = {
+                    id: 911,
+                    guide_type: "Food",
+                    city: "Evil City",
+                    recommendation: 'Worst recommendation',
+                    comments: "Rude comments",
+                };
+        
+                beforeEach(`insert bad guide`, () => {
+                return db.into("guide").insert([badGuide]);
+                });
+        
+                it(`removes no bueno XSS attack content`, () => {
+                return supertest(app)
+                    .get(`/api/guides/${badGuide.id}`)
+                .set(`Authorization`, helpers.authHeader(testUser))
+                    .expect(200)
+                    .expect((res) => {
+                    expect(res.body.guide_type).to.eql("Food");
+                    expect(res.body.city).to.eql("Evil City");
+                    expect(res.body.recommendation).to.eql("Worst recommendation");
+                    expect(res.body.comments).to.equal("Rude comments");
+                    });
+                });
+            });
+        });
+
+
 
     describe(`POST /api/guides`, () => {
         beforeEach('insert guides', () => {
@@ -36,6 +202,7 @@ describe(`Guide Endpoints`, () => {
 
         requiredFields.forEach(field => {
             const attemptBody = {
+                id: 1,
                 guide_type: 'test guide',
                 city: 'test city',
                 recommendation: 'test recommendation',
@@ -43,10 +210,11 @@ describe(`Guide Endpoints`, () => {
             }
 
             it(`responds with 400 required error when ${field} is missing`, () => {
-                delete attemptBody[field]
+                attemptBody[field] = null
 
                 return supertest(app)
                     .post('/api/guides')
+                    .set(`Authorization`, helpers.authHeader(testUser))
                     .send(attemptBody)
                     .expect(400, {
                         error: `Missing '${field}' in the request body.`
@@ -63,6 +231,7 @@ describe(`Guide Endpoints`, () => {
             }
             return supertest(app)
                 .post('/api/guides')
+                .set(`Authorization`, helpers.authHeader(testUser))
                 .send(missCity)
                 .expect(400, {error: `Please tell us what city this is in.`})
         })
@@ -76,6 +245,7 @@ describe(`Guide Endpoints`, () => {
             }
             return supertest(app)
                 .post('/api/guides')
+                .set(`Authorization`, helpers.authHeader(testUser))
                 .send(missRecom)
                 .expect(400, {error: `What is is that you wanted to recommend?`})
         })
@@ -89,13 +259,15 @@ describe(`Guide Endpoints`, () => {
             }
             return supertest(app)
             .post('/api/guides')
+            .set(`Authorization`, helpers.authHeader(testUser))
             .send(missComm)
             .expect(400, {error: `Why is this worth recommending?.`})
         })
 
         describe(`Given a valid guide`, () => {
-            it(`responds 201, serialized guide with`, () => {
+            it(`responds 201, with serialized guide`, () => {
                 const newGuide = {
+                    id: 1,
                     guide_type: 'test guide',
                     city: 'test city',
                     recommendation: 'recommendation',
@@ -103,6 +275,7 @@ describe(`Guide Endpoints`, () => {
                 }
                 return supertest(app)
                     .post('/api/guides')
+                .set(`Authorization`, helpers.authHeader(testUser))
                     .send(newGuide)
                     .expect(201)
                     .expect(res => {
@@ -117,12 +290,13 @@ describe(`Guide Endpoints`, () => {
         })
     })
 
-    describe('DELETE /api/guides', () => {
+    describe('DELETE /api/guides/:guide_id', () => {
         context('Given guide does not exist', () => {
             it('responds with 404', () => {
                 const guideId = 12345
                 return supertest(app)
                     .delete(`/api/guides/${guideId}`)
+                .set(`Authorization`, helpers.authHeader(testUser))
                     .expect(404, {error: { message: `Sorry, you've been misGUIDEed!`}})
             })
         })
@@ -153,7 +327,7 @@ describe(`Guide Endpoints`, () => {
                 )
                 return supertest(app)
                     .delete(`/api/guides/${idToRemove}`)
-                    .set('Authorization', helpers.authHeader(testGuide))
+                    .set(`Authorization`, helpers.authHeader(testUser))
                     .expect(204)
                     .then((res) => 
                         supertest(app).get('/api/guides').expect(expectedGuides)
