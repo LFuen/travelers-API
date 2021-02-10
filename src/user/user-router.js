@@ -8,29 +8,35 @@ const parse = express.json()
 
 userRouter
     .post('/', parse, async (req, res, next) => {
-        const {name, username, password} = req.body
+        const {username, password} = req.body
 
-        for(const field of ['username', 'password'])
+        for(const field of ['username', 'password']){
+            console.log('this is the field', req.body[field])
             if(!req.body[field])
                 return res.status(400).json({
                     error: `Missing '${field}' in the request body.`
-                })
+                })}
 
         try {
+            
+            const usernameTaken = await UserService.usernameTaken(
+                req.app.get('db'),
+                username
+            )
+
+            console.log(usernameTaken)
+
+            if(usernameTaken)
+            return res.status(400).json({error: `Sorry, that username has been taken.`})
+
+            const hashed = UserService.hashPass(password)
+
             const passError = UserService.validatePass(password)
 
             if(passError)
             return res.status(400).json({error: passError})
 
-            const usernameTaken = UserService.usernameTaken(
-                req.app.get('db'),
-                username
-            )
 
-            if(usernameTaken)
-            return res.status(400).json({error: `Sorry, that username has been taken.`})
-
-            const hashed = await UserService.hashPass(password)
 
             const newUser = {
                 username,

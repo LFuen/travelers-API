@@ -25,13 +25,10 @@ const authHeader = (user, secret = process.env.JWT_SECRET) => {
     return `Bearer ${token}`
 }
 
-const truncUserTable = (db) => {
-    return db.raw(`TRUNCATE "user", "user" RESTART IDENTITY CASCADE`)
+const truncTables = (db) => {
+    return db.raw(`TRUNCATE "user", "guide" RESTART IDENTITY CASCADE`)
 }
 
-const truncGuideTable = (db) => {
-    return db.raw(`TRUNCATE "guide", "user" RESTART IDENTITY CASCADE`)
-}
 
 const seedUsers = (db, users) => {
     const preppedUsers = users.map(user => ({
@@ -49,6 +46,25 @@ const seedUsers = (db, users) => {
 }
 
 const guidesArray = () => {
+    return [
+        {
+            guide_type: 'Stay',
+            city: 'Miami Beach',
+            recommendation: 'Marriott Miami Beach',
+            comments: 'This place is amazing and the staff is great.'
+        
+        },
+
+        {
+            guide_type: 'Food',
+            city: 'Miami',
+            recommendation: `Frankie's Pizza`,
+            comments: `This is probably THE best pizza place in all of Miami. But only if you're a fan of Italian-style square pizza!`
+        }
+    ]
+}
+
+const guidesArrayId = () => {
     return [
         {
             id: 1,
@@ -82,10 +98,10 @@ function misGuide() {
     const expectedGuide = {
       ...badGuide,
       id: 1,
-      guide_type: "Food",
-      city: "Evil City",
+      guide_type: 'Food',
+      city: 'Evil City',
       recommendation: 'Worst recommendation',
-      comments: "Rude comments",
+      comments: 'Rude comments'
     };
     return {
       badGuide,
@@ -97,9 +113,9 @@ function misGuide() {
 module.exports = {
     usersArray,
     guidesArray,
+    guidesArrayId,
     authHeader,
-    truncUserTable,
-    truncGuideTable,
+    truncTables,
     seedUsers,
     misGuide
 }

@@ -37,10 +37,10 @@ guideRouter
   })
   .post(parse, requireAuth, (req, res, next) => {
     const { city, recommendation, comments } = req.body;
-    const newGuide = { city, recommendation, comments };
+    let newGuide = { city, recommendation, comments };
 
     for (const [key, value] of Object.entries(newGuide)) {
-      if (value === null) {
+      if (value == null) {
         return res.status(400).json({
           error: { message: `Missing '${key}' in the request body.` },
         });
@@ -67,14 +67,15 @@ guideRouter
   .route("/:guide_id")
   .all(requireAuth)
   .all((req, res, next) => {
+      console.log('********PARAMS', req.params)
       GuideService.getById(req.app.get("db"), req.params.guide_id)
         .then((guide) => {
             if(!guide) {
-                return res.status(400).json({
+                return res.status(404).json({
                     error: {message: `Sorry, you've been misGUIDEed!`}
                 })
             }
-            res.json(guide)
+            res.guide = guide
             next()
         })
         .catch(next)

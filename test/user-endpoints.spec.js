@@ -20,20 +20,19 @@ describe(`User Endpoints`, () => {
 
     after('disconnect from db', ()=> db.destroy())
 
-    before('clean the table', () => helpers.truncUserTable(db))
+    beforeEach('clean the table', () => helpers.truncTables(db))
 
-    afterEach('cleanup', () => helpers.truncUserTable(db))
+    afterEach('cleanup', () => helpers.truncTables(db))
 
     
 
     describe(`POST /api/users`, () => {
-        beforeEach(`insert users`, () => helpers.seedUsers(db, testUsers))
+        // beforeEach(`insert users`, () => helpers.seedUsers(db, testUsers))
         
-        const requiredFields = ['name', 'username', 'password']
+        const requiredFields = ['username', 'password']
 
         requiredFields.forEach(field => {
             const registerAttemptBody = {
-                name: 'test name',
                 username: 'test username',
                 password: 'test password'
             }
@@ -52,19 +51,20 @@ describe(`User Endpoints`, () => {
 
         it(`responds with 400 'Please create a password longer than 8 characters.' when empty password`, () => {
             const shortPass = {
-                name: 'short name',
                 username: 'short username',
-                password: 'X Eight'
+                password: '1'
             }
+
             return supertest(app)
                 .post('/api/users')
                 .send(shortPass)
-                .expect(400, {error: `Please create a password longer than 8 characters.`})
+                .expect(400, {
+                        error: `Please create a password longer than 8 characters.`
+                })
         })
 
         it(`responds with 400 'Whoa, that's a crazy long password! Can you keep it under 72 characters? when long password`, () => {
             const longPass = {
-                name: 'long name',
                 username: 'long username',
                 password: '*'.repeat(73)
             }
@@ -76,7 +76,6 @@ describe(`User Endpoints`, () => {
 
         it(`responds 400 when password begins or ends with a space`, () => {
             const passSpaces = {
-                name: 'space name',
                 username: 'space username',
                 password: ' 2Sp@ces '
             }
@@ -88,7 +87,6 @@ describe(`User Endpoints`, () => {
 
         it(`responds 400 error when password isn't complex enough`, () => {
             const weakPass = {
-                name: 'weak name',
                 username: 'weak username',
                 password: 'weak sauce'
             }
@@ -100,7 +98,6 @@ describe(`User Endpoints`, () => {
 
         it(`responds 400 when user name already taken`, () => {
             const userTaken = {
-                name: 'name taken',
                 username: testUser.username,
                 password: 'B33ntaken!'
             }
@@ -113,7 +110,6 @@ describe(`User Endpoints`, () => {
         describe(`Given a valid user`, () => {
             it(`responds 201, serialized user with no password`, () => {
                 const newUser = {
-                    name: 'serialized name',
                     username: 'serialized username',
                     password: 'noPass'
                 }
@@ -123,7 +119,6 @@ describe(`User Endpoints`, () => {
                     .expect(201)
                     .expect(res => {
                         expect(res.body).to.have.property('id')
-                        expect(res.body.name).to.eql(newUser.name)
                         expect(res.body.username).to.eql(newUser.username)
                         expect(res.body).to.not.have.property('password')
                         expect(res.headers.location).to.eql(`/api/users/${res.body.id}`)
@@ -132,7 +127,6 @@ describe(`User Endpoints`, () => {
 
             it(`stores the new user in db with bcrypted password`, () => {
                 const newUser = {
-                    name: 'crypt name',
                     username: 'crypt username',
                     password: '3ncrypted!'
                 }
@@ -147,7 +141,6 @@ describe(`User Endpoints`, () => {
                         .first()
                         .then(row => {
                             expect(row.username).to.eql(newUser.username)
-                            expect(row.name).to.eql(newUser.name)
 
                             return crypt.compare(newUser.password, row.password)
                         })
@@ -155,6 +148,7 @@ describe(`User Endpoints`, () => {
                             expect(compare).to.be.true
                         })
                     )
+                    
             })
         })
     })

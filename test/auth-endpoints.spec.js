@@ -5,14 +5,14 @@ const supertest = require('supertest')
 const app = require('../src/app')
 const helpers = require('./test-helpers')
 const { JWT_SECRET, JWT_EXPIRY } = require('../src/config')
-const testUsers = helpers.usersArray()
-const testUser = testUsers[0]
+
 
 
 describe('Auth Endpoints', () => {
     let db 
 
-
+    const testUsers = helpers.usersArray()
+    const testUser = testUsers[0]
 
     before(`make knex instance`, () => {
         db = knex({
@@ -24,9 +24,9 @@ describe('Auth Endpoints', () => {
 
     after('disconnect from db', () => db.destroy())
 
-    before(`cleanup`, () => helpers.truncUserTable(db))
+    before(`cleanup`, () => helpers.truncTables(db))
 
-    afterEach(`cleanup`, () => helpers.truncUserTable(db))
+    afterEach(`cleanup`, () => helpers.truncTables(db))
 
     describe(`POST /api/auth/token`, () => {
         beforeEach(`insert users`, () => 
@@ -110,7 +110,3 @@ describe('Auth Endpoints', () => {
     })
 })
 
-
-module.exports = {
-    testUser
-}
