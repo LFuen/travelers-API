@@ -4,7 +4,7 @@ INSERT INTO "user" (username, password)
 VALUES
     (
         'admin',
-        '$2a$04$IZJWZUiBkBuKfyJU0XV9Xexr2BmGsCBnt1vRIzI9ncV3rBQeDqtbi'
+        '$2a$12$5qOEHRGjZDJsafxlEWqJheBvO4uq1wNegmlZfXYK/w7L8YiLe/JOW'
     );
 
 INSERT INTO "guide" (guide_type, city, recommendation, comments)

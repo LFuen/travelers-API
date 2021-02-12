@@ -289,16 +289,21 @@ describe(`Guide Endpoints`, () => {
                     guide_type: 'test guide',
                     city: 'test city',
                     recommendation: 'recommendation',
-                    comments: 'test comments'
+                    comments: 'missing comments'
                 }
+
+                before(`insert guide`, () => {
+                    return db.into("guide").insert([newGuide]);
+                    });
+
 
                 return supertest(app)
                     .post('/api/guides')
                     .set(`Authorization`, helpers.authHeader(testUser))
-                    .send(newGuide[0])
+                    .send(newGuide)
                     .expect(201)
                     .expect(res => {
-                        console.log('this is the res body', res.body)
+                        console.log('this is the res body', res)
                         expect(res.body).to.have.property('id')
                         expect(res.body.guide_type).to.eql(newGuide.guide_type)
                         expect(res.body.city).to.eql(newGuide.city)
@@ -306,6 +311,12 @@ describe(`Guide Endpoints`, () => {
                         expect(res.body.comments).to.eql(newGuide.comments)
                         expect(res.headers.location).to.eql(`/api/guides/${res.body.id}`)
                     })
+                    .then((guideRes) => 
+                        supertest(app)
+                            .get(`api/guides/${guideRes.body.id}`)
+                            .set(`Authorization`, helpers.authHeader(testUser))
+                            .expect(guideRes.body)
+                    )
             })
         })
     })

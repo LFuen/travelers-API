@@ -27,7 +27,6 @@ describe(`User Endpoints`, () => {
     
 
     describe(`POST /api/users`, () => {
-        // beforeEach(`insert users`, () => helpers.seedUsers(db, testUsers))
         
         const requiredFields = ['username', 'password']
 
@@ -88,7 +87,7 @@ describe(`User Endpoints`, () => {
         it(`responds 400 error when password isn't complex enough`, () => {
             const weakPass = {
                 username: 'weak username',
-                password: 'weak sauce'
+                password: '11AAaabb'
             }
             return supertest(app)
                 .post('/api/users')
@@ -118,11 +117,12 @@ describe(`User Endpoints`, () => {
                     .send(newUser)
                     .expect(201)
                     .expect(res => {
+                        
                         expect(res.body).to.have.property('id')
                         expect(res.body.username).to.eql(newUser.username)
                         expect(res.body).to.not.have.property('password')
                         expect(res.headers.location).to.eql(`/api/users/${res.body.id}`)
-                    })
+                })
             })
 
             it(`stores the new user in db with bcrypted password`, () => {

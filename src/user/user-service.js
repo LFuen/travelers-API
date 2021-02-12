@@ -41,7 +41,7 @@ const UserService = {
         if(password.startsWith(' ') || password.endsWith(' ')) {
             return `Please create a password that does not begin or end with an empty space.`
         }
-        if(REGEX_UPPER_LOWER_NUMBER_SPECIAL.test(password)){
+        if(!REGEX_UPPER_LOWER_NUMBER_SPECIAL.test(password)){
             return `Password must contain an uppercase letter, a lowercase letter, a number, and a special character.`
         }
         return null
