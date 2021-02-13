@@ -32,6 +32,9 @@ const UserService = {
     },
 
     validatePass(password) {
+        if(!password){
+            return `Missing 'password' in the request body.`;
+        }
         if(password.length < 8) {
             return 'Please create a password longer than 8 characters.'
         }

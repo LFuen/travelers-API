@@ -1,4 +1,4 @@
-CREATE TABLE "saves" (
+CREATE TABLE "like" (
     "liked" BOOLEAN,
     "guide_id" INTEGER REFERENCES "guide"(id),
     "user_id" INTEGER REFERENCES "user"(id),

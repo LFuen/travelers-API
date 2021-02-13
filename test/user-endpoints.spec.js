@@ -100,24 +100,32 @@ describe(`User Endpoints`, () => {
                 username: testUser.username,
                 password: 'B33ntaken!'
             }
-            return supertest(app)
-                .post('/api/users')
-                .send(userTaken)
-                .expect(400, {error: `Sorry, that username has been taken.`})
+            supertest(app) // VALID USER CREATION (user not taken)
+            .post('/api/users')
+            .send(userTaken)
+            .expect(201);
+
+            supertest(app) // INVALID USER CREATION (user taken)
+            .post('/api/users')
+            .send(userTaken)
+            .expect(400, {error: `Sorry, that username has been taken.`})    
+                
         })
 
         describe(`Given a valid user`, () => {
             it(`responds 201, serialized user with no password`, () => {
                 const newUser = {
                     username: 'serialized username',
-                    password: 'noPass'
+                    password: 'Password1!'
+                    
                 }
+                
                 return supertest(app)
                     .post('/api/users')
+                    .set(`Authorization`, helpers.authHeader(testUser))
                     .send(newUser)
                     .expect(201)
                     .expect(res => {
-                        
                         expect(res.body).to.have.property('id')
                         expect(res.body.username).to.eql(newUser.username)
                         expect(res.body).to.not.have.property('password')

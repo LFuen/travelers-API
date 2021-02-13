@@ -36,8 +36,8 @@ guideRouter
       .catch(next);
   })
   .post(parse, requireAuth, (req, res, next) => {
-    const { city, recommendation, comments } = req.body;
-    const newGuide = { city, recommendation, comments };
+    const { guide_type, city, recommendation, comments } = req.body;
+    let newGuide = { guide_type, city, recommendation, comments };
 
     for (const [key, value] of Object.entries(newGuide)) {
       if (value == null) {
@@ -47,11 +47,12 @@ guideRouter
       }
     }
 
-    // newGuide = {
-    //   city: xss(city), 
-    //   recommendation: xss(recommendation), 
-    //   comments: xss(comments)
-    // }
+    newGuide = {
+      guide_type: guide_type,
+      city: xss(city), 
+      recommendation: xss(recommendation), 
+      comments: xss(comments)
+    }
 
     GuideService.addGuide(req.app.get("db"), newGuide)
       .then((guide) => {

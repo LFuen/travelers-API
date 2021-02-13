@@ -283,7 +283,7 @@ describe(`Guide Endpoints`, () => {
         })
 
         describe(`Given a valid guide`, () => {
-            it(`responds 201, with serialized guide`, () => {
+            it(`responds 201, with new guide`, () => {
                 const newGuide = {
                     id: 1,
                     guide_type: 'test guide',
@@ -292,18 +292,13 @@ describe(`Guide Endpoints`, () => {
                     comments: 'missing comments'
                 }
 
-                before(`insert guide`, () => {
-                    return db.into("guide").insert([newGuide]);
-                    });
-
-
                 return supertest(app)
                     .post('/api/guides')
                     .set(`Authorization`, helpers.authHeader(testUser))
                     .send(newGuide)
                     .expect(201)
                     .expect(res => {
-                        console.log('this is the res body', res)
+                        console.log('this is the res', res.body)
                         expect(res.body).to.have.property('id')
                         expect(res.body.guide_type).to.eql(newGuide.guide_type)
                         expect(res.body.city).to.eql(newGuide.city)
@@ -311,11 +306,11 @@ describe(`Guide Endpoints`, () => {
                         expect(res.body.comments).to.eql(newGuide.comments)
                         expect(res.headers.location).to.eql(`/api/guides/${res.body.id}`)
                     })
-                    .then((guideRes) => 
+                    .then(res =>
                         supertest(app)
-                            .get(`api/guides/${guideRes.body.id}`)
+                            .get(`/api/guides/${res.body.id}`)
                             .set(`Authorization`, helpers.authHeader(testUser))
-                            .expect(guideRes.body)
+                            .expect(res.body)
                     )
             })
         })
