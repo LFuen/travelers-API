@@ -108,7 +108,7 @@ describe(`Guide Endpoints`, () => {
             it(`responds with 200 and the specified guide`, () => {
             const guideId = 2;
             const expectedGuide = testGuides[guideId - 1];
-            console.log("EXPECTED:", expectedGuide)
+
             return supertest(app)
                 .get(`/api/guides/${guideId}`)
                 .set(`Authorization`, helpers.authHeader(testUser))
@@ -298,7 +298,7 @@ describe(`Guide Endpoints`, () => {
                     .send(newGuide)
                     .expect(201)
                     .expect(res => {
-                        console.log('this is the res', res.body)
+
                         expect(res.body).to.have.property('id')
                         expect(res.body.guide_type).to.eql(newGuide.guide_type)
                         expect(res.body.city).to.eql(newGuide.city)

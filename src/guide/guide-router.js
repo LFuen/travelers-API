@@ -68,7 +68,7 @@ guideRouter
   .route("/:guide_id")
   .all(requireAuth)
   .all((req, res, next) => {
-      console.log('********PARAMS', req.params)
+
       GuideService.getById(req.app.get("db"), req.params.guide_id)
         .then((guide) => {
             if(!guide) {

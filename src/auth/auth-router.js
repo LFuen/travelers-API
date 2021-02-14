@@ -5,7 +5,7 @@ const { requireAuth } = require('../middleware/jwt-auth')
 const authRouter = express.Router()
 const parse = express.json()
 
-console.log(requireAuth)
+
 
 authRouter
     .route('/token')

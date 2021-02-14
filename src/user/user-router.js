@@ -47,7 +47,7 @@ userRouter.post("/", parse, async (req, res, next) => {
       .location(path.posix.join(req.originalUrl, `/${user.id}`))
       .json(UserService.serializeUser(user));
   } catch (error) {
-    console.log(error);
+
     next(error);
   }
 });
