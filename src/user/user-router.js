@@ -22,7 +22,7 @@ userRouter.post("/", parse, async (req, res, next) => {
       return res.status(400).json({ error: passError });
     }
 
-    const hashed = UserService.hashPass(password);
+    const hashed = await UserService.hashPass(password);
 
     const newUser = {
       username,
