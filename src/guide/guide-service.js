@@ -27,7 +27,7 @@ const GuideService = {
             .where({id}).delete()
     },
 
-    updateGuide(knex, id) {
+    updateGuide(knex, id, newGuideFields) {
         return knex("guide")
             .where({id})
             .update(newGuideFields)
