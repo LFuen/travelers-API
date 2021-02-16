@@ -7,6 +7,6 @@ CREATE TABLE "guide" (
     "date_created" TIMESTAMP,
     "like_user_id" INT[] DEFAULT ARRAY[]::INT[],
     "likes" INT DEFAULT 0,
-    "author" INT,
-    FOREIGN KEY("author") REFERENCES "user"(id)
+    "author" TEXT,
+    FOREIGN KEY("author") REFERENCES "user"(username)
 );

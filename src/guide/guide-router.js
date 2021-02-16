@@ -96,7 +96,7 @@ guideRouter
     const guideUpdate = {guide_type, city, recommendation, comments } 
 
     const numVal = Object.values(guideUpdate).filter(Boolean).length
-        if(numVal === 0) {
+        if(numVal == 0) {
             return res.status(400).json({
                 error: { message: `Request body must contain either 'guide_type', 'city', 'recommendation', or 'comments'`}
             })
