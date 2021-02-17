@@ -91,7 +91,7 @@ guideRouter
         })
         .catch(next)
   })
-  .patch(parse, (req, res, next) => {
+  .patch(parse, requireAuth, (req, res, next) => {
     const {guide_type, city, recommendation, comments } = req.body;
     const guideUpdate = {guide_type, city, recommendation, comments } 
 
