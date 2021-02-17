@@ -95,6 +95,8 @@ guideRouter
     const {guide_type, city, recommendation, comments } = req.body;
     const guideUpdate = {guide_type, city, recommendation, comments } 
 
+    console.log('This is the req body: ', req.body)
+
     const numVal = Object.values(guideUpdate).filter(Boolean).length
         if(numVal == 0) {
             return res.status(400).json({
