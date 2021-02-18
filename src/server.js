@@ -1,3 +1,6 @@
+
+const pg = require('pg');
+pg.defaults.ssl = process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false;
 const knex = require('knex')
 const app = require('./app')
 const config = require('./config')

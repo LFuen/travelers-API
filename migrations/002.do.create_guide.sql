@@ -4,9 +4,9 @@ CREATE TABLE "guide" (
     "city" TEXT NOT NULL,
     "recommendation" TEXT NOT NULL,
     "comments" TEXT NOT NULL,
-    "date_created" TIMESTAMP,
+    "date_created" TIMESTAMPTZ DEFAULT now(),
     "like_user_id" INT[] DEFAULT ARRAY[]::INT[],
     "likes" INT DEFAULT 0,
-    "author" TEXT,
-    FOREIGN KEY("author") REFERENCES "user"(username)
+    "author" INT,
+    FOREIGN KEY("author") REFERENCES "user"(id)
 );

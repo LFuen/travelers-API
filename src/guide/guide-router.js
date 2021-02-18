@@ -12,7 +12,8 @@ const serializeGuide = (guide) => ({
     guide_type: guide.guide_type,
     city: xss(guide.city),
     recommendation: xss(guide.recommendation),
-    comments: xss(guide.comments)
+    comments: xss(guide.comments),
+    author: guide.author
 })
 
 
