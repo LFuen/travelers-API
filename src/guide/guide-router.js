@@ -23,13 +23,7 @@ guideRouter
     GuideService.getAllGuides(req.app.get("db"))
       .then(async (guides) => {
         if(guides.length !== 0) {
-          return guides.map((guide, i) => ({
-            id: guide.id,
-            guide_type: guide.guide_type,
-            city: xss(guide.city),
-            recommendation: xss(guide.recommendation),
-            comments: xss(guide.comments)
-          }))
+          return guides.map(serializeGuide)
         }
       })
       .then((guides) => {return res.json(guides || [])
