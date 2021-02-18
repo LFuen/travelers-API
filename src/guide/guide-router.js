@@ -46,7 +46,8 @@ guideRouter
       guide_type: guide_type,
       city: xss(city), 
       recommendation: xss(recommendation), 
-      comments: xss(comments)
+      comments: xss(comments),
+      author: req.user.id
     }
 
     GuideService.addGuide(req.app.get("db"), newGuide)
