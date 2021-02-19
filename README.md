@@ -1,4 +1,4 @@
-# Travellers API
+# Travelers API
 
 ## Routes
 
@@ -21,8 +21,6 @@
 <p>If the user tries to navigate to a route or guide that does not exist, they will be rerouted to a 404 page.</p>
 
 <p>Travelers is a PERN application, using PostgreSQL, Express, React and Node.js.</p>
-
-<p>This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).</p>
 
 
 ![1](./src/images/screen/1.png)
