@@ -2,9 +2,9 @@
 
 ## Routes
 
-<p>api/guides - This route allows you to GET and POST guides which consist of a guide type, city, recommendation, and comment section.</p>
+<p>/guides - This route allows you to GET and POST guides which consist of a guide type, city, recommendation, and comment section.</p>
 
-<p>api/:guide_id - This route allows you to GET or DELETE a guide by ID.</p>
+<p>/:guide_id - This route allows you to GET or DELETE a guide by ID.</p>
 
 
 # Travelers
