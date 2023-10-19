@@ -1,5 +1,7 @@
 # Travelers API
 
+## THIS APP IS UNDER MAINTENANCE, THERE IS NO DATABASE HOOKUP UNTIL FURTHER NOTICE
+
 ## Routes
 
 <p>/guides - This route allows you to GET and POST guides which consist of a guide type, city, recommendation, and comment section.</p>
